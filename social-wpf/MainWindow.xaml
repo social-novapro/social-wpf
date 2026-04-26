@@ -1,12 +1,52 @@
 ﻿<Window x:Class="social_wpf.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:social_wpf"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Interact Desktop"
+        Height="650"
+        Width="1000"
+        MinHeight="500"
+        MinWidth="750"
+    >
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="56"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="28"/>
+        </Grid.RowDefinitions>
 
+        <Border Grid.Row="0"
+                BorderThickness="0,0,0,1"
+                Padding="18,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Interact Desktop"
+                           VerticalAlignment="Center"
+                           FontSize="20"
+                           FontWeight="Bold"/>
+
+                <TextBlock x:Name="UserStatusTextBlock"
+                           Grid.Column="1"
+                           VerticalAlignment="Center"
+                           Text="Not logged in"/>
+            </Grid>
+        </Border>
+
+        <Frame x:Name="MainFrame"
+               Grid.Row="1"
+               NavigationUIVisibility="Hidden"/>
+
+        <Border Grid.Row="2"
+                BorderThickness="0,1,0,0"
+                Padding="12,0">
+
+            <TextBlock x:Name="StatusTextBlock"
+                       VerticalAlignment="Center"
+                       FontSize="12"
+                       Text="Ready"/>
+        </Border>
     </Grid>
 </Window>

@@ -22,6 +22,12 @@ namespace social_wpf.Services
             {
                 BaseAddress = new Uri(ApiRoutes.BaseUrl)
             };
+
+            lock (_authLock)
+            {
+                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("devtoken", ApiRoutes.DevToken);
+                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("apptoken", ApiRoutes.AppToken);
+            }
         }
 
         public void ClearTokens()
@@ -30,9 +36,7 @@ namespace social_wpf.Services
             {
                 httpClient.DefaultRequestHeaders.Remove("usertoken");
                 httpClient.DefaultRequestHeaders.Remove("userid");
-                httpClient.DefaultRequestHeaders.Remove("apptoken");
                 httpClient.DefaultRequestHeaders.Remove("accesstoken");
-                httpClient.DefaultRequestHeaders.Remove("devtoken");
             }
         }
         public void SetTokens(AppSettings settings)
@@ -40,9 +44,6 @@ namespace social_wpf.Services
             ClearTokens();
             lock (_authLock)
             {
-                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("devtoken", ApiRoutes.DevToken);
-                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("apptoken", ApiRoutes.AppToken);
-
                 if (!settings.IsLoggedIn)
                 {
                     return;
