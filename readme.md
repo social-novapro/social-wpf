@@ -8,3 +8,6 @@ Created by Daniel Kravec
 | Feed Sync Thread | Fetches posts / refreshes feed | Background API work |
 | Upload / Post Thread | Waits for queued posts and uploads them | Background API work |
 | Media Cache Thread | Downlods/caches avatars or images | Long-running work task |
+
+
+https://learn.microsoft.com/en-us/dotnet/fundamentals/networking/http/httpclient

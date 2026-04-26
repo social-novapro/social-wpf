@@ -8,7 +8,10 @@ namespace social_wpf.Models
 {
     public class AppSettings
     {
-        public string BaseUrl { get; set; } = "https://interact-api.novapro.net";
+        public bool IsLoggedIn { get; set; } = false;
         public string LastUsername { get; set; } = string.Empty;
+        public string UserToken { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
+        public string AccessToken { get; set; } = string.Empty;
     }
 }
