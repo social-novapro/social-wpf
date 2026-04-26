@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace social_wpf.Models
 {
-    internal class PostDraft
+    public class PostDraft
     {
+        public string userID { get; set; } = string.Empty;
+        public string content { get; set; } = string.Empty;
+        public string? replyingPostId { get; set; }
+        public string? quotingPostId { get; set; }
     }
 }
