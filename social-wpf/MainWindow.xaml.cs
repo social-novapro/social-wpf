@@ -28,15 +28,15 @@ namespace social_wpf
             storage = new IsolatedStorageService();
             settings = storage.LoadSettings();
             apiClient = new InteractApiClient(settings);
+
             if (settings.IsLoggedIn)
             {
                 apiClient.SetTokens(settings);
-                MainFrame.Navigate(new Pages.HomePage(/*apiClient, storage, settings*/));
+                NavigateToFeed();
             }
             else
             {
-                MainFrame.Navigate(new Pages.LoginPage(/*apiClient, storage, settings*/));
-
+                NavigateToLogin();
             }
         }
 
@@ -44,13 +44,14 @@ namespace social_wpf
         {
             ShowLoggedOutStatus();
             StatusTextBlock.Text = "Please login";
-            MainFrame.Navigate(new Pages.LoginPage(/*apiClient, storage, settings*/));
+            MainFrame.Navigate(new Pages.LoginPage(apiClient, storage, settings, this));
         }
 
         public void NavigateToFeed()
         {
             ShowLoggedInStatus();
             StatusTextBlock.Text = "Welcome back!";
+            MainFrame.Navigate(new Pages.HomePage());
         }
 
         public void SetStatus(string message)

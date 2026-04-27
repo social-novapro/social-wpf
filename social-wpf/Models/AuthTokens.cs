@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace social_wpf.Models
 {
-    public class AuthTokens
+    public class LoginResponse
     {
-        public string usertoken { get; set; } = string.Empty;
-        public string userid { get; set; } = string.Empty;
-        public string apptoken { get; set; } = string.Empty;
-        public string accesstoken { get; set; } = string.Empty;
-        public string devtoken { get; set; } = string.Empty;
+        public bool login { get; set; } = false;
+        public UserData publicData { get; set; } = new UserData();
+        public string accessToken { get; set; } = string.Empty;
+        public string userToken { get; set; } = string.Empty;
+        public string userID { get; set; } = string.Empty;
     }
 }

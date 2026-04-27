@@ -63,32 +63,36 @@ namespace social_wpf.Services
             IsolatedStorageService storageService
         )
         {
-            var loginData = new
-            {
-                username,
-                password
-            };
+            using HttpRequestMessage request = new HttpRequestMessage(
+                HttpMethod.Get,
+                ApiRoutes.Auth.Login
+            );
 
-            string json = JsonSerializer.Serialize(loginData);
-            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await httpClient.PostAsync(ApiRoutes.Auth.Login, httpContent);
-            
+            request.Headers.TryAddWithoutValidation("devtoken", ApiRoutes.DevToken);
+            request.Headers.TryAddWithoutValidation("apptoken", ApiRoutes.AppToken);
+            request.Headers.TryAddWithoutValidation("username", username);
+            request.Headers.TryAddWithoutValidation("password", password);
+
+            using HttpResponseMessage response = await httpClient.SendAsync(request);
+
             if (!response.IsSuccessStatusCode)
             {
                 return false;
             }
-            string responseContent = await response.Content.ReadAsStringAsync();
-            AuthTokens? authTokens = JsonSerializer.Deserialize<AuthTokens>(responseContent);
 
-            if (authTokens == null)
+            LoginResponse? loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+
+            if (loginResponse == null || !loginResponse.login)
             {
                 return false;
             }
 
+
             settings.IsLoggedIn = true;
-            settings.UserToken = authTokens.usertoken;
-            settings.UserId = authTokens.userid;
-            settings.AccessToken = authTokens.accesstoken;
+            settings.LastUsername = loginResponse.publicData.username;
+            settings.UserToken = loginResponse.userToken;
+            settings.UserId = loginResponse.userID;
+            settings.AccessToken = loginResponse.accessToken;
             storageService.SaveSettings(settings);
             SetTokens(settings);
             return true;

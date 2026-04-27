@@ -9,7 +9,7 @@ namespace social_wpf.Services
 {
     public static class ApiRoutes
     {
-        public static string BaseUrl { get; set; } = "https://interact-api.novapro.net";
+        public static string BaseUrl { get; set; } = "https://interact-api.novapro.net/v1/";
 
         /* The dev token and app token are used for authentication when making API calls. 
          * Ideally, these should be stored securely, but for the sake of this project, they are hardcoded here. 
@@ -19,26 +19,26 @@ namespace social_wpf.Services
 
         public static class Auth
         {
-            public const string Login = "/auth/login";
+            public const string Login = "auth/userLogin";
         }
 
         public static class Feed
         {
-            public static string UserFeed = "/feeds/userFeed/v2";
-            public static string AllPosts = "/feeds/allPosts/v2";
-            public static string AllPostsIndex(string prevIndexId) => $"/feeds/allPosts/v2/{prevIndexId}";
+            public static string UserFeed = "feeds/userFeed/v2";
+            public static string AllPosts = "feeds/allPosts/v2";
+            public static string AllPostsIndex(string prevIndexId) => $"feeds/allPosts/v2/{prevIndexId}";
         }
 
         public static class Posts
         {
-            public const string CreatePost = "/posts/create";
-            public static string GetPost(string postId) => $"/posts/get/full/{postId}";
+            public const string CreatePost = "posts/create";
+            public static string GetPost(string postId) => $"posts/get/full/{postId}";
 
         }
 
         public static class Users
         {
-            public static string BasicInfo(string userId) => $"/users/get/basic/{userId}";
+            public static string BasicInfo(string userId) => $"users/get/basic/{userId}";
         }
     }
 }
