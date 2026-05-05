@@ -113,7 +113,22 @@ namespace social_wpf.Services
         //{
         //}
 
-        public async Task<FeedResponse> GetUserFeed(string userId, string url, string? prevIndexId = null)
+        public async Task<FeedResponse> GetUserFeed(string? prevIndexId = null)
+        {
+            string getUserFeed = prevIndexId == null
+                ? ApiRoutes.Feed.UserFeed
+                : ApiRoutes.Feed.UserFeedIndex(prevIndexId);
+
+            FeedResponse? feedResponse = await httpClient.GetFromJsonAsync<FeedResponse>(getUserFeed);
+            if (feedResponse == null)
+            {
+                return new FeedResponse();
+            }
+
+            return feedResponse;
+        }
+
+        public async Task<FeedResponse> GetAllPosts(string? prevIndexId = null)
         {
             string getUserFeed = prevIndexId == null 
                 ? ApiRoutes.Feed.AllPosts

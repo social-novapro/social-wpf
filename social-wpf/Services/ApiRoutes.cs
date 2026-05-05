@@ -25,6 +25,7 @@ namespace social_wpf.Services
         public static class Feed
         {
             public static string UserFeed = "feeds/userFeed/v2";
+            public static string UserFeedIndex(string prevIndexId) => $"feeds/userFeed/v2/{prevIndexId}";
             public static string AllPosts = "feeds/allPosts/v2";
             public static string AllPostsIndex(string prevIndexId) => $"feeds/allPosts/v2/{prevIndexId}";
         }

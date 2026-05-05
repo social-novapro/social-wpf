@@ -24,5 +24,16 @@ namespace social_wpf.Models
         public bool isQuote { get; set; } = false;
 
         public bool isReply { get; set; } = false;
+
+        public List<AttachmentData> attachments { get; set; } = [];
+    }
+
+    public class AttachmentData
+    {
+        public string _id { get; set; } = string.Empty;
+        //public string index { get; set; } = string.Empty;
+        public string type { get; set; } = string.Empty;
+        public string host { get; set; } = string.Empty;
+        public string url {  get; set; } = string.Empty;
     }
 }
