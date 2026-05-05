@@ -57,6 +57,7 @@ namespace social_wpf.Threads
                     }
                 }
                 appState.UpdateThreadStatus("MediaCacheWorker", "Idle", $"Checked media for {postsCopy.Count} posts");
+                Thread.Sleep(5000);
             }
             appState.UpdateThreadStatus("MediaCacheWorker", "Stopped", "Media cache worker has stopped");
         }
@@ -65,7 +66,7 @@ namespace social_wpf.Threads
         {
             if (string.IsNullOrWhiteSpace(imageUrl))
             {
-                appState.UpdateThreadStatus("MediaCacheWorker", "Caching", $"Checked profile image for {post.userData.username}");
+                return;
             }
 
             bool alreadyCached;
@@ -92,13 +93,10 @@ namespace social_wpf.Threads
                     if (!appState.MediaCache.ContainsKey(imageUrl))
                     {
                         appState.MediaCache.Add(imageUrl, image);
-                        appState.UpdateThreadStatus("MediaCacheWorker", "Caching", $"Cached profile image for {post.userData.username}");
-                    }
-                    else
-                    {
-                        appState.UpdateThreadStatus("MediaCacheWorker", "Caching", $"Profile image for {post.userData.username} was cached by another thread");
                     }
                 }
+
+                appState.UpdateThreadStatus("MediaCacheWorker", "Caching", $"Cached profile image for {post.userData.username}");
             }
             catch
             {

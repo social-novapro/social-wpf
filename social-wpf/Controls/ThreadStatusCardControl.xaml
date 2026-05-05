@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="social_wpf.Controls.ThreadStatusCardControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Border BorderBrush="#E2E2E2"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="10"
+            Margin="0,0,0,10"
+            Background="White">
+
+        <StackPanel>
+            <TextBlock x:Name="NameTextBlock"
+                       FontWeight="Bold"/>
+
+            <TextBlock x:Name="StateTextBlock"
+                       Foreground="#333"
+                       Margin="0,4,0,0"/>
+
+            <TextBlock x:Name="MessageTextBlock"
+                       Foreground="Gray"
+                       TextWrapping="Wrap"
+                       Margin="0,4,0,0"/>
+
+            <TextBlock x:Name="UpdatedTextBlock"
+                       Foreground="Gray"
+                       FontSize="11"
+                       Margin="0,4,0,0"/>
+        </StackPanel>
+    </Border>
+</UserControl>

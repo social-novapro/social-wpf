@@ -22,12 +22,18 @@ namespace social_wpf
         private readonly AppSettings settings;
         private readonly InteractApiClient apiClient;
 
+        private readonly Threads.SharedAppState sharedAppState;
+        private readonly Threads.WorkerManager workerManager;
+
         public MainWindow()
         {
             InitializeComponent();
             storage = new IsolatedStorageService();
             settings = storage.LoadSettings();
             apiClient = new InteractApiClient(settings);
+
+            sharedAppState = new Threads.SharedAppState();
+            workerManager = new Threads.WorkerManager(sharedAppState, apiClient, settings);
 
             if (settings.IsLoggedIn)
             {
@@ -51,7 +57,10 @@ namespace social_wpf
         {
             ShowLoggedInStatus();
             StatusTextBlock.Text = "Welcome back!";
-            MainFrame.Navigate(new Pages.HomePage());
+
+            workerManager.Start();
+
+            MainFrame.Navigate(new Pages.HomePage(sharedAppState, workerManager));
         }
 
         public void SetStatus(string message)
@@ -72,6 +81,7 @@ namespace social_wpf
         
         protected override void OnClosed(EventArgs e)
         {
+            workerManager.Stop();
             storage.SaveSettings(settings);
             base.OnClosed(e);
         }
