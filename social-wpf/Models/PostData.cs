@@ -11,21 +11,19 @@ namespace social_wpf.Models
         public string _id { get; set; } = string.Empty;
         public string userID { get; set; } = string.Empty;
 
-        public int timePosted { get; set; } = 0;
+        public Int64 timePosted { get; set; } = 0;
 
         public string content { get; set; } = string.Empty;
 
-        public int totalLikes { get; set; } = 0;
-
-        public int totalReplies { get; set; } = 0;
-
-        public int totalQuotes { get; set; } = 0;
+        public long? totalLikes { get; set; } = 0;
+        public long? totalReplies { get; set; } = 0;
+        public long? totalQuotes { get; set; } = 0;
 
         public bool isQuote { get; set; } = false;
 
         public bool isReply { get; set; } = false;
 
-        public List<AttachmentData> attachments { get; set; } = [];
+        public List<AttachmentData> attachments { get; set; } = new();
     }
 
     public class AttachmentData

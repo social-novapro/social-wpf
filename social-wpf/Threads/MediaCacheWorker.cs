@@ -48,7 +48,7 @@ namespace social_wpf.Threads
                     string profileURL = post.userData.profileURL;
                     GetAndCacheImage(post, profileURL);
 
-                    foreach (AttachmentData attachment in post.postData.attachments)
+                    foreach (AttachmentData attachment in post.postData.attachments ?? new List<AttachmentData>())
                     {
                         if (attachment.type == "image")
                         {

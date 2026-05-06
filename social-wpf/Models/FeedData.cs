@@ -11,7 +11,7 @@ namespace social_wpf.Models
         public string? prevIndexId { get; set; }
         public string? nextIndexId { get; set; }
         public int amount { get; set; } = 0;
-        public string feedVersion { get; set; } = string.Empty;
+        public int feedVersion { get; set; } = 0;
         public List<FeedData> posts { get; set; } = [];
 
     }
@@ -48,12 +48,13 @@ namespace social_wpf.Models
 
     public class ReplyData
     {
-        public PostData replyPost { get; set; } = new PostData();
-        public UserData replyUser { get; set; } = new UserData();
+        public PostData? replyPost { get; set; }
+        public UserData? replyUser { get; set; }
     }
+
     public class QuoteData
     {
-        public PostData quotePost { get; set; } = new PostData();
-        public UserData quoteUser { get; set; } = new UserData();
+        public PostData? quotePost { get; set; }
+        public UserData? quoteUser { get; set; }
     }
 }

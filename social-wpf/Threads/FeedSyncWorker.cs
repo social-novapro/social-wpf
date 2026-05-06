@@ -31,7 +31,7 @@ namespace social_wpf.Threads
                 {
                     appState.UpdateThreadStatus("FeedSyncWorker", "Running", "Fetching latest feed...");
 
-                    FeedResponse feed = apiClient.GetUserFeed().GetAwaiter().GetResult();
+                    FeedResponse feed = apiClient.GetAllPosts().GetAwaiter().GetResult();
 
                     lock (appState.FeedLock)
                     {

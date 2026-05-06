@@ -13,14 +13,14 @@ namespace social_wpf.Models
         public string displayName { get; set; } = string.Empty;
         public string profileURL { get; set; } = string.Empty;
 
-        public int totalPosts { get; set; } = 0;
-        public int totalReplies { get; set; } = 0;
-        public int totalQuotes { get; set; } = 0;
+        public long? totalPosts { get; set; } = 0;
+        public long? totalReplies { get; set; } = 0;
+        public long? totalQuotes { get; set; } = 0;
 
-        public int followerCount { get; set; } = 0;
-        public int followingCount { get; set; } = 0;
-        public int likeCount { get; set; } = 0;
-        public int likedCount { get; set; } = 0;
+        public long? followerCount { get; set; } = 0;
+        public long? followingCount { get; set; } = 0;
+        public long? likeCount { get; set; } = 0;
+        public long? likedCount { get; set; } = 0;
 
         public string description { get; set; } = string.Empty;
         public string pronouns { get; set; } = string.Empty;
