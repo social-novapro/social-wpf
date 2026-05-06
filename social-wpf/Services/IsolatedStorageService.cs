@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
+// Stores login/session settings using user-level Isolated Storage.
 namespace social_wpf.Services
 {
     public class IsolatedStorageService

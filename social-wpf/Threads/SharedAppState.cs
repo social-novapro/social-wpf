@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
+// Shared state used by the UI thread and worker threads.
+// Locks protect shared collections from concurrent access.
 namespace social_wpf.Threads
 {
     public class SharedAppState

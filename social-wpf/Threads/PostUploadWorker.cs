@@ -6,6 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// Producer-consumer queue.
+// UI thread adds posts to the queue.
+// Upload thread waits using Monitor.Wait until Monitor.Pulse wakes it.
 namespace social_wpf.Threads
 {
     public class PostUploadWorker

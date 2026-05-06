@@ -17,7 +17,7 @@ namespace social_wpf.Models
         [JsonPropertyName("replyingPostID")]
         public string? replyingPostId { get; set; }
 
-        [JsonPropertyName("quotingPostID")]
+        [JsonPropertyName("quoteReplyPostID")]
         public string? quotingPostId { get; set; }
     }
 }
