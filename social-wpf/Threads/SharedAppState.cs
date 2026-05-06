@@ -23,6 +23,12 @@ namespace social_wpf.Threads
 
         public Dictionary<string, BitmapImage> MediaCache { get; } = new();
 
+        public string? NextIndexId { get; set; }
+        public bool IsLoadingMoreFeed { get; set; } = false;
+        public bool LoadMoreRequested { get; set; } = false;
+        public DateTime LastFeedRefresh { get; set; } = DateTime.MinValue;
+        public bool RefreshFeedRequested { get; set; } = true;
+        
         public void UpdateThreadStatus(string threadName, string state, string message)
         {
             lock (StatusLock)
@@ -37,6 +43,26 @@ namespace social_wpf.Threads
                 status.State = state;
                 status.Message = message;
                 status.LastUpdated = DateTime.Now;
+            }
+        }
+
+        public void RequestLoadMoreFeed()
+        {
+            lock (FeedLock)
+            {
+                if (!string.IsNullOrWhiteSpace(NextIndexId) && !IsLoadingMoreFeed)
+                {
+                    LoadMoreRequested = true;
+                    UpdateThreadStatus("FeedSyncWorker", "Requested", $"Load more requested with index {NextIndexId}");
+                }
+            }
+        }
+
+        public void RequestRefreshFeed()
+        {
+            lock (FeedLock)
+            {
+                RefreshFeedRequested = true;
             }
         }
     }

@@ -23,14 +23,29 @@ namespace social_wpf.Controls
     public partial class PostCardControl : UserControl
     {
         private readonly SharedAppState appState;
+        public event Action<FeedData>? ReplyRequested;
+        public event Action<FeedData>? QuoteRequested;
+
+        private readonly FeedData post;
 
         public PostCardControl(FeedData post, SharedAppState appState)
         {
             InitializeComponent();
 
+            this.post = post;
             this.appState = appState;
 
             RenderPost(post);
+        }
+
+        private void ReplyButton_Click(object sender, RoutedEventArgs e)
+        {
+            ReplyRequested?.Invoke(post);
+        }
+
+        private void QuoteButton_Click(object sender, RoutedEventArgs e)
+        {
+            QuoteRequested?.Invoke(post);
         }
 
         private void RenderPost(FeedData post)

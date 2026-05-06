@@ -27,6 +27,10 @@ namespace social_wpf.Pages
         private readonly SharedAppState appState;
         private readonly WorkerManager workerManager;
         private readonly DispatcherTimer refreshTimer;
+
+        private string? selectedReplyPostId;
+        private string? selectedQuotePostId;
+
         public HomePage(SharedAppState appState, WorkerManager workerManager)
         {
             InitializeComponent();
@@ -52,7 +56,12 @@ namespace social_wpf.Pages
                 return;
             }
 
-            workerManager.QueuePost(content, null, null);
+            workerManager.QueuePost(content, selectedReplyPostId, selectedQuotePostId);
+
+            selectedReplyPostId = null;
+            selectedQuotePostId = null;
+
+            ReplyContextBorder.Visibility = Visibility.Collapsed;
 
             PostTextBox.Clear();
             PostStatusTextBlock.Text = "Post queued for upload.";
@@ -118,7 +127,12 @@ namespace social_wpf.Pages
 
             foreach (FeedData post in postsCopy)
             {
-                FeedStackPanel.Children.Add(new PostCardControl(post, appState));
+                PostCardControl card = new PostCardControl(post, appState);
+
+                card.ReplyRequested += StartReply;
+                card.QuoteRequested += StartQuote;
+
+                FeedStackPanel.Children.Add(card);
             }
         }
 
@@ -149,6 +163,45 @@ namespace social_wpf.Pages
             {
                 ThreadStatusStackPanel.Children.Add(new ThreadStatusCardControl(status));
             }
+        }
+
+        private void FeedScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            double distanceFromBottom = e.ExtentHeight - e.VerticalOffset - e.ViewportHeight;
+
+            if (distanceFromBottom < 250)
+            {
+                appState.RequestLoadMoreFeed();
+            }
+        }
+
+        private void ClearReplyContextButton_Click(object sender, RoutedEventArgs e)
+        {
+            selectedReplyPostId = null;
+            selectedQuotePostId = null;
+            ReplyContextBorder.Visibility = Visibility.Collapsed;
+        }
+
+        private void StartReply(FeedData post)
+        {
+            selectedReplyPostId = post.postData._id;
+            selectedQuotePostId = null;
+
+            ReplyContextTextBlock.Text = $"In reply to @{post.userData.username}";
+            ReplyContextBorder.Visibility = Visibility.Visible;
+
+            PostTextBox.Focus();
+        }
+
+        private void StartQuote(FeedData post)
+        {
+            selectedQuotePostId = post.postData._id;
+            selectedReplyPostId = null;
+
+            ReplyContextTextBlock.Text = $"Quoting @{post.userData.username}";
+            ReplyContextBorder.Visibility = Visibility.Visible;
+
+            PostTextBox.Focus();
         }
     }
 }
