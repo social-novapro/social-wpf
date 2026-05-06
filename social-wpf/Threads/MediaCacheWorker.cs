@@ -52,7 +52,7 @@ namespace social_wpf.Threads
                     {
                         if (attachment.type == "image")
                         {
-                            string attachmentURL = attachment.url;
+                            GetAndCacheImage(post, attachment.url);
                         }
                     }
                 }
@@ -70,6 +70,7 @@ namespace social_wpf.Threads
             }
 
             bool alreadyCached;
+
             lock (appState.MediaCacheLock)
             {
                 alreadyCached = appState.MediaCache.ContainsKey(imageUrl);
@@ -83,9 +84,9 @@ namespace social_wpf.Threads
 
             try
             {
-                appState.UpdateThreadStatus("MediaCacheWorker", "Caching", $"Downloading profile image for {post.userData.username}...");
+                appState.UpdateThreadStatus("MediaCacheWorker", "Caching", $"Downloading media for {post.userData.username}...");
+               
                 byte[] imageBytes = httpClient.GetByteArrayAsync(imageUrl).GetAwaiter().GetResult();
-
                 BitmapImage image = CreateFrozenBitmapImage(imageBytes);
 
                 lock (appState.MediaCacheLock)
@@ -96,11 +97,11 @@ namespace social_wpf.Threads
                     }
                 }
 
-                appState.UpdateThreadStatus("MediaCacheWorker", "Caching", $"Cached profile image for {post.userData.username}");
+                appState.UpdateThreadStatus("MediaCacheWorker", "Caching", $"Cached media for {post.userData.username}");
             }
             catch
             {
-                appState.UpdateThreadStatus("MediaCacheWorker", "Error", $"Failed to cache profile image for {post.userData.username}");
+                appState.UpdateThreadStatus("MediaCacheWorker", "Error", $"Failed to cache media for {post.userData.username}");
             }
         }
 

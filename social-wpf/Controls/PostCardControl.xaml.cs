@@ -57,7 +57,7 @@ namespace social_wpf.Controls
         {
             AttachmentsPanel.Children.Clear();
 
-            foreach(AttachmentData attachment in post.postData.attachments)
+            foreach (AttachmentData attachment in post.postData.attachments ?? new List<AttachmentData>())
             {
                 if (attachment.type != "image")
                 {
@@ -89,20 +89,20 @@ namespace social_wpf.Controls
 
                 Border imageBorder = new Border
                 {
-                    Width = 260,
-                    MaxHeight = 220,
-                    CornerRadius = new System.Windows.CornerRadius(8),
+                    MaxWidth = 520,
+                    MaxHeight = 320,
+                    CornerRadius = new CornerRadius(8),
                     ClipToBounds = true,
-                    Margin = new System.Windows.Thickness(0, 0, 8, 8),
+                    Margin = new Thickness(0, 0, 8, 8),
                     BorderBrush = new SolidColorBrush(Color.FromRgb(225, 225, 225)),
-                    BorderThickness = new System.Windows.Thickness(1)
+                    BorderThickness = new Thickness(1)
                 };
 
                 Image imageControl = new Image
                 {
                     Source = image,
-                    Stretch = Stretch.UniformToFill,
-                    MaxHeight = 220
+                    Stretch = Stretch.Uniform,
+                    MaxHeight = 320
                 };
 
                 imageBorder.Child = imageControl;

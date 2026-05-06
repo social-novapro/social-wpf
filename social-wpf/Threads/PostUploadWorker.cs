@@ -32,7 +32,7 @@ namespace social_wpf.Threads
             {
                 PostDraft? draft = WaitForPost();
 
-                if (draft != null)
+                if (draft == null)
                 {
                     continue;
                 }
@@ -42,7 +42,9 @@ namespace social_wpf.Threads
                     appState.UpdateThreadStatus("PostUploadWorker", "Uploading", $"Post Content: {draft.content}");
 
                     PostData createdPost = apiClient.CreatePost(draft).GetAwaiter().GetResult();
+                    
                     postsUploadedByThisThread++;
+
                     appState.UpdateThreadStatus("PostUploadWorker", "Idle", $"Uploaded post {createdPost._id}. Total uploaded by this thread: {postsUploadedByThisThread}");
                 }
                 catch (Exception ex)
@@ -50,6 +52,7 @@ namespace social_wpf.Threads
                     appState.UpdateThreadStatus("PostUploadWorker", "Error", ex.Message);
                 }
             }
+
             appState.UpdateThreadStatus("PostUploadWorker", "Stopped", $"Total posts uploaded by this thread: {postsUploadedByThisThread}");
         }
 
