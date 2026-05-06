@@ -29,6 +29,10 @@ namespace social_wpf.Threads
         public DateTime LastFeedRefresh { get; set; } = DateTime.MinValue;
         public bool RefreshFeedRequested { get; set; } = true;
 
+        public string LastPostUploadMessage { get; set; } = string.Empty;
+        public DateTime LastPostUploadAt { get; set; } = DateTime.MinValue;
+        public string? LastUploadedPostId { get; set; }
+
         public void UpdateThreadStatus(
             string threadName,
             string state,
@@ -89,6 +93,27 @@ namespace social_wpf.Threads
             lock (FeedLock)
             {
                 RefreshFeedRequested = true;
+            }
+        }
+
+        public void MarkPostUploaded(string postId)
+        {
+            lock (StatusLock)
+            {
+                LastUploadedPostId = postId;
+                LastPostUploadAt = DateTime.Now;
+                LastPostUploadMessage = $"Uploaded post {postId} at {LastPostUploadAt:T}";
+            }
+
+            RequestRefreshFeed();
+        }
+
+        public void MarkPostUploadFailed(string message)
+        {
+            lock (StatusLock)
+            {
+                LastPostUploadAt = DateTime.Now;
+                LastPostUploadMessage = $"Upload failed: {message}";
             }
         }
     }

@@ -42,14 +42,24 @@ namespace social_wpf.Threads
                     appState.UpdateThreadStatus("PostUploadWorker", "Uploading", $"Post Content: {draft.content}");
 
                     PostData createdPost = apiClient.CreatePost(draft).GetAwaiter().GetResult();
-                    
+
+                    if (string.IsNullOrWhiteSpace(createdPost._id))
+                    {
+                        throw new Exception("API returned no post ID.");
+                    }
+
                     postsUploadedByThisThread++;
 
                     appState.UpdateThreadStatus("PostUploadWorker", "Uploaded", $"Uploaded post {createdPost._id}. Total uploaded by this thread: {postsUploadedByThisThread}");
+
+                    appState.MarkPostUploaded(createdPost._id);
+
+                    Thread.Sleep(1000);
                 }
                 catch (Exception ex)
                 {
                     appState.UpdateThreadStatus("PostUploadWorker", "Error", ex.Message);
+                    appState.MarkPostUploadFailed(ex.Message);
                 }
             }
 

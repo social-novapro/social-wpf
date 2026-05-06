@@ -32,6 +32,11 @@ namespace social_wpf.Pages
         private string? selectedQuotePostId;
 
         private string lastPostUploadMessage = string.Empty;
+        private DateTime lastDisplayedUploadAt = DateTime.MinValue;
+
+
+        private int lastRenderedPostCount = -1;
+        private int lastRenderedCachedMediaCount = -1;
 
         public HomePage(SharedAppState appState, WorkerManager workerManager)
         {
@@ -76,7 +81,27 @@ namespace social_wpf.Pages
 
         private void RefreshUi()
         {
-            RefreshFeed();
+            int postCount;
+            int cachedMediaCount;
+
+            lock (appState.FeedLock)
+            {
+                postCount = appState.Posts.Count;
+            }
+
+            lock (appState.MediaCacheLock)
+            {
+                cachedMediaCount = appState.MediaCache.Count;
+            }
+
+            if (postCount != lastRenderedPostCount ||
+                cachedMediaCount != lastRenderedCachedMediaCount)
+            {
+                RefreshFeed();
+                lastRenderedPostCount = postCount;
+                lastRenderedCachedMediaCount = cachedMediaCount;
+            }
+
             RefreshThreadStatuses();
             RefreshSummary();
             RefreshPostUploadStatus();
@@ -141,11 +166,33 @@ namespace social_wpf.Pages
 
         private void RefreshPostUploadStatus()
         {
+            string lastUploadMessage;
+            DateTime lastUploadAt;
             ThreadStatus? uploadStatus;
 
             lock (appState.StatusLock)
             {
+                lastUploadMessage = appState.LastPostUploadMessage;
+                lastUploadAt = appState.LastPostUploadAt;
+
                 uploadStatus = appState.ThreadStatuses.FirstOrDefault(s => s.Name == "PostUploadWorker");
+            }
+
+            if (lastUploadAt > lastDisplayedUploadAt)
+            {
+                lastDisplayedUploadAt = lastUploadAt;
+
+                if (lastUploadMessage.StartsWith("Upload failed"))
+                {
+                    PostStatusTextBlock.Foreground = Brushes.Crimson;
+                }
+                else
+                {
+                    PostStatusTextBlock.Foreground = Brushes.Green;
+                }
+
+                PostStatusTextBlock.Text = lastUploadMessage;
+                return;
             }
 
             if (uploadStatus == null)
@@ -153,34 +200,20 @@ namespace social_wpf.Pages
                 return;
             }
 
-            string message = $"{uploadStatus.State}: {uploadStatus.Message}";
-
-            if (message == lastPostUploadMessage)
-            {
-                return;
-            }
-
-            lastPostUploadMessage = message;
-
             if (uploadStatus.State == "Uploading")
             {
                 PostStatusTextBlock.Foreground = Brushes.DarkOrange;
                 PostStatusTextBlock.Text = "Uploading post...";
             }
-            else if (uploadStatus.State == "Uploaded" || uploadStatus.Message.StartsWith("Uploaded post"))
+            else if (uploadStatus.State == "Queued")
             {
-                PostStatusTextBlock.Foreground = Brushes.Green;
+                PostStatusTextBlock.Foreground = Brushes.Gray;
                 PostStatusTextBlock.Text = uploadStatus.Message;
             }
             else if (uploadStatus.State == "Error")
             {
                 PostStatusTextBlock.Foreground = Brushes.Crimson;
                 PostStatusTextBlock.Text = "Upload failed: " + uploadStatus.Message;
-            }
-            else if (uploadStatus.State == "Queued")
-            {
-                PostStatusTextBlock.Foreground = Brushes.Gray;
-                PostStatusTextBlock.Text = uploadStatus.Message;
             }
         }
 

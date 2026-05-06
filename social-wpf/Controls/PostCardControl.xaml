@@ -27,7 +27,19 @@
 
                 <StackPanel Grid.Column="1"
                             Margin="10,0,0,0">
+                    <Border x:Name="ContextBorder"
+                            Visibility="Collapsed"
+                            Background="#F4F4F5"
+                            CornerRadius="6"
+                            Padding="8"
+                            Margin="0,0,0,8">
 
+                            <TextBlock x:Name="ContextTextBlock"
+                                       Foreground="#555"
+                                       FontSize="12"
+                                       TextWrapping="Wrap"/>
+                    </Border>
+                    
                     <TextBlock x:Name="UsernameTextBlock"
                                FontWeight="Bold"
                                FontSize="14"/>

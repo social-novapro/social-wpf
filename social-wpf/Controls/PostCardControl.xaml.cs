@@ -50,6 +50,8 @@ namespace social_wpf.Controls
 
         private void RenderPost(FeedData post)
         {
+            RenderPostContext(post);
+
             UsernameTextBlock.Text = string.IsNullOrWhiteSpace(post.userData.username)
                 ? "Unknown User"
                 : post.userData.username;
@@ -66,6 +68,46 @@ namespace social_wpf.Controls
             }
 
             RenderAttachments(post);
+        }
+
+        private void RenderPostContext(FeedData post)
+        {
+            ContextBorder.Visibility = Visibility.Collapsed;
+            ContextTextBlock.Text = string.Empty;
+
+            if (post.quoteData?.quotePost != null && post.quoteData?.quoteUser != null)
+            {
+                string username = post.quoteData.quoteUser.username;
+                string content = post.quoteData.quotePost.content;
+
+                ContextTextBlock.Text = $"Quoting @{username}: \"{TrimContent(content)}\"";
+                ContextBorder.Visibility = Visibility.Visible;
+                return;
+            }
+
+            if (post.replyData?.replyPost != null && post.replyData?.replyUser != null)
+            {
+                string username = post.replyData.replyUser.username;
+                string content = post.replyData.replyPost.content;
+
+                ContextTextBlock.Text = $"Replying to @{username}: \"{TrimContent(content)}\"";
+                ContextBorder.Visibility = Visibility.Visible;
+            }
+        }
+
+        private string TrimContent(string content)
+        {
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                return "";
+            }
+
+            if (content.Length <= 80)
+            {
+                return content;
+            }
+
+            return content.Substring(0, 80) + "...";
         }
 
         private void RenderAttachments(FeedData post)

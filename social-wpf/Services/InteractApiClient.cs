@@ -1,11 +1,13 @@
 ﻿using social_wpf.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace social_wpf.Services
@@ -145,23 +147,37 @@ namespace social_wpf.Services
 
         public async Task<PostData> CreatePost(PostDraft postDraft)
         {
-            //var request = new
-            string json = JsonSerializer.Serialize(postDraft);
-
-            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-
-            var response = await httpClient.PostAsync(ApiRoutes.Posts.CreatePost, httpContent);
-
-            if (response.IsSuccessStatusCode)
+            JsonSerializerOptions options = new JsonSerializerOptions
             {
-                string responseContent = await response.Content.ReadAsStringAsync();
-                PostData? postData = JsonSerializer.Deserialize<PostData>(responseContent);
-                if (postData != null)
-                {
-                    return postData;
-                }
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            };
+
+            string json = JsonSerializer.Serialize(postDraft, options);
+
+            Debug.WriteLine("CreatePost request:");
+            Debug.WriteLine(json);
+
+            using StringContent httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+
+            using HttpResponseMessage response = await httpClient.PostAsync(ApiRoutes.Posts.CreatePost, httpContent);
+
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            Debug.WriteLine("CreatePost response:");
+            Debug.WriteLine(responseContent);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Create post failed: {response.StatusCode} - {responseContent}");
             }
-            return new PostData();
+
+            PostData? postData = JsonSerializer.Deserialize<PostData>(responseContent);
+            if (postData == null)
+            {
+                throw new Exception("Create post response could not be decoded.");
+            }
+
+            return postData;
         }
     }
  }

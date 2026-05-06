@@ -11,7 +11,8 @@ namespace social_wpf.Models
         public string _id { get; set; } = string.Empty;
         public string userID { get; set; } = string.Empty;
 
-        public Int64 timePosted { get; set; } = 0;
+        public string timePosted { get; set; } = "0";
+        public long timestamp { get; set; } = 0;
 
         public string content { get; set; } = string.Empty;
 
