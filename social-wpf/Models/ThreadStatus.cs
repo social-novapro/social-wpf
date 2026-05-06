@@ -12,5 +12,6 @@ namespace social_wpf.Models
         public string State { get; set; } = "Stopped";
         public string Message { get; set; } = string.Empty;
         public DateTime LastUpdated { get; set; } = DateTime.Now;
+        public DateTime? NextUpdateAt { get; set; }
     }
 }

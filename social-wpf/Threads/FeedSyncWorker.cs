@@ -31,17 +31,17 @@ namespace social_wpf.Threads
                 {
                     bool shouldLoadMore = false;
                     bool shouldRefresh = false;
-                    string? nextIndexId = null;
+                    string? prevIndexId = null;
 
                     lock (appState.FeedLock)
                     {
                         shouldLoadMore = appState.LoadMoreRequested && 
                             !appState.IsLoadingMoreFeed && 
-                            !string.IsNullOrWhiteSpace(appState.NextIndexId);
+                            !string.IsNullOrWhiteSpace(appState.PrevIndexId);
 
                         if (shouldLoadMore)
                         {
-                            nextIndexId = appState.NextIndexId;
+                            prevIndexId = appState.PrevIndexId;
                             appState.LoadMoreRequested = false;
                             appState.IsLoadingMoreFeed = true;
                         }
@@ -60,16 +60,16 @@ namespace social_wpf.Threads
                         }
                     }
                     
-                    if (shouldLoadMore && !string.IsNullOrWhiteSpace(nextIndexId))
+                    if (shouldLoadMore && !string.IsNullOrWhiteSpace(prevIndexId))
                     {
-                        LoadMorePosts(nextIndexId);
+                        LoadMorePosts(prevIndexId);
                     }
                     else if (shouldRefresh)
                     {
                         RefreshFirstPage();
                     } else
                     {
-                        appState.UpdateThreadStatus("FeedSyncWorker", "Idle", "Waiting for next sync...");
+                        appState.UpdateThreadStatus("FeedSyncWorker", "Idle", "Waiting for next sync...", TimeSpan.FromMilliseconds(1000));
                     }
                 }
                 catch (Exception ex)
@@ -77,7 +77,7 @@ namespace social_wpf.Threads
                     appState.UpdateThreadStatus("FeedSyncWorker", "Error", ex.Message);
                 }
 
-                Thread.Sleep(15000); // Sleep for 15 seconds before next sync
+                Thread.Sleep(1000); // Sleep for 1 seconds before next sync, will not reload fully unless 30s passed
             }
 
             appState.UpdateThreadStatus("FeedSyncWorker", "Stopped", "Feed sync stopped");
@@ -94,7 +94,7 @@ namespace social_wpf.Threads
                 appState.Posts.Clear();
                 appState.Posts.AddRange(normalizedPosts);
 
-                appState.NextIndexId = feed.nextIndexId;
+                appState.PrevIndexId = feed.prevIndexId;
                 appState.LastFeedRefresh = DateTime.Now;
                 appState.IsLoadingMoreFeed = false;
             }
@@ -102,17 +102,17 @@ namespace social_wpf.Threads
             appState.UpdateThreadStatus("FeedSyncWorker", "Idle", $"Loaded latest {feed.posts.Count} posts");
         }
 
-        private void LoadMorePosts(string nextIndexId)
+        private void LoadMorePosts(string prevIndexId)
         {
             appState.UpdateThreadStatus("FeedSyncWorker", "Running", "Loading older posts...");
 
-            FeedResponse feed = apiClient.GetAllPosts(nextIndexId).GetAwaiter().GetResult();
+            FeedResponse feed = apiClient.GetAllPosts(prevIndexId).GetAwaiter().GetResult();
 
             List<FeedData> normalizedPosts = NormalizeApiOrder(feed.posts);
 
             lock (appState.FeedLock)
             {
-                foreach (FeedData post in feed.posts)
+                foreach (FeedData post in normalizedPosts)
                 {
                     bool alreadyExists = appState.Posts.Any(p => p.postData._id == post.postData._id);
 
@@ -122,11 +122,11 @@ namespace social_wpf.Threads
                     }
                 }
 
-                appState.NextIndexId = feed.nextIndexId;
+                appState.PrevIndexId = feed.prevIndexId;
                 appState.IsLoadingMoreFeed = false;
             }
 
-            appState.UpdateThreadStatus("FeedSyncWorker", "Idle", $"Loaded {feed.posts.Count} older posts");
+            appState.UpdateThreadStatus("FeedSyncWorker", "Idle", $"Loaded {feed.posts.Count} older posts", TimeSpan.FromMilliseconds(1000));
         }
 
         private List<FeedData> NormalizeApiOrder(List<FeedData> posts)

@@ -31,6 +31,8 @@ namespace social_wpf.Pages
         private string? selectedReplyPostId;
         private string? selectedQuotePostId;
 
+        private string lastPostUploadMessage = string.Empty;
+
         public HomePage(SharedAppState appState, WorkerManager workerManager)
         {
             InitializeComponent();
@@ -39,7 +41,7 @@ namespace social_wpf.Pages
             this.workerManager = workerManager;
 
             refreshTimer = new DispatcherTimer();
-            refreshTimer.Interval = TimeSpan.FromSeconds(1);
+            refreshTimer.Interval = TimeSpan.FromMilliseconds(1000);
             refreshTimer.Tick += RefreshTimer_Tick;
             refreshTimer.Start();
 
@@ -77,6 +79,7 @@ namespace social_wpf.Pages
             RefreshFeed();
             RefreshThreadStatuses();
             RefreshSummary();
+            RefreshPostUploadStatus();
         }
 
         private void RefreshSummary()
@@ -133,6 +136,51 @@ namespace social_wpf.Pages
                 card.QuoteRequested += StartQuote;
 
                 FeedStackPanel.Children.Add(card);
+            }
+        }
+
+        private void RefreshPostUploadStatus()
+        {
+            ThreadStatus? uploadStatus;
+
+            lock (appState.StatusLock)
+            {
+                uploadStatus = appState.ThreadStatuses.FirstOrDefault(s => s.Name == "PostUploadWorker");
+            }
+
+            if (uploadStatus == null)
+            {
+                return;
+            }
+
+            string message = $"{uploadStatus.State}: {uploadStatus.Message}";
+
+            if (message == lastPostUploadMessage)
+            {
+                return;
+            }
+
+            lastPostUploadMessage = message;
+
+            if (uploadStatus.State == "Uploading")
+            {
+                PostStatusTextBlock.Foreground = Brushes.DarkOrange;
+                PostStatusTextBlock.Text = "Uploading post...";
+            }
+            else if (uploadStatus.State == "Uploaded" || uploadStatus.Message.StartsWith("Uploaded post"))
+            {
+                PostStatusTextBlock.Foreground = Brushes.Green;
+                PostStatusTextBlock.Text = uploadStatus.Message;
+            }
+            else if (uploadStatus.State == "Error")
+            {
+                PostStatusTextBlock.Foreground = Brushes.Crimson;
+                PostStatusTextBlock.Text = "Upload failed: " + uploadStatus.Message;
+            }
+            else if (uploadStatus.State == "Queued")
+            {
+                PostStatusTextBlock.Foreground = Brushes.Gray;
+                PostStatusTextBlock.Text = uploadStatus.Message;
             }
         }
 

@@ -59,6 +59,7 @@ namespace social_wpf.Threads
             try
             {
                 appState.PostQueue.Enqueue(draft);
+                appState.UpdateThreadStatus("PostUploadWorker", "Queued", $"Post queued at {DateTime.Now:T}");
                 Monitor.Pulse(appState.PostQueueLock);
             }
             finally

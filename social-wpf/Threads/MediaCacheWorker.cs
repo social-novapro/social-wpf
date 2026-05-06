@@ -56,7 +56,7 @@ namespace social_wpf.Threads
                         }
                     }
                 }
-                appState.UpdateThreadStatus("MediaCacheWorker", "Idle", $"Checked media for {postsCopy.Count} posts");
+                appState.UpdateThreadStatus("MediaCacheWorker", "Idle", $"Checked media for {postsCopy.Count} posts", TimeSpan.FromMilliseconds(5000));
                 Thread.Sleep(5000);
             }
             appState.UpdateThreadStatus("MediaCacheWorker", "Stopped", "Media cache worker has stopped");

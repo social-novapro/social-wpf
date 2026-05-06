@@ -45,7 +45,7 @@ namespace social_wpf.Threads
                     
                     postsUploadedByThisThread++;
 
-                    appState.UpdateThreadStatus("PostUploadWorker", "Idle", $"Uploaded post {createdPost._id}. Total uploaded by this thread: {postsUploadedByThisThread}");
+                    appState.UpdateThreadStatus("PostUploadWorker", "Uploaded", $"Uploaded post {createdPost._id}. Total uploaded by this thread: {postsUploadedByThisThread}");
                 }
                 catch (Exception ex)
                 {

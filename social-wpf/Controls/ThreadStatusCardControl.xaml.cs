@@ -28,7 +28,24 @@ namespace social_wpf.Controls
             NameTextBlock.Text = status.Name;
             StateTextBlock.Text = $"State: {status.State}";
             MessageTextBlock.Text = status.Message;
-            UpdatedTextBlock.Text = $"Updated: {status.LastUpdated:T}";
+
+            string updatedText = $"Updated: {status.LastUpdated:T}";
+
+            if (status.NextUpdateAt != null)
+            {
+                double secondsLeft = (status.NextUpdateAt.Value - DateTime.Now).TotalSeconds;
+
+                if (secondsLeft > 0)
+                {
+                    updatedText += $" • Next update in {Math.Ceiling(secondsLeft)}s";
+                }
+                else
+                {
+                    updatedText += " • Next update due";
+                }
+            }
+
+            UpdatedTextBlock.Text = updatedText;
         }
     }
 }

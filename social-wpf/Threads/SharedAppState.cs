@@ -23,17 +23,22 @@ namespace social_wpf.Threads
 
         public Dictionary<string, BitmapImage> MediaCache { get; } = new();
 
-        public string? NextIndexId { get; set; }
+        public string? PrevIndexId { get; set; }
         public bool IsLoadingMoreFeed { get; set; } = false;
         public bool LoadMoreRequested { get; set; } = false;
         public DateTime LastFeedRefresh { get; set; } = DateTime.MinValue;
         public bool RefreshFeedRequested { get; set; } = true;
-        
-        public void UpdateThreadStatus(string threadName, string state, string message)
-        {
+
+        public void UpdateThreadStatus(
+            string threadName,
+            string state,
+            string message,
+            TimeSpan? nextUpdateIn = null
+        ) {
             lock (StatusLock)
             {
                 ThreadStatus? status = ThreadStatuses.FirstOrDefault(s => s.Name == threadName);
+
                 if (status == null)
                 {
                     status = new ThreadStatus { Name = threadName };
@@ -43,18 +48,39 @@ namespace social_wpf.Threads
                 status.State = state;
                 status.Message = message;
                 status.LastUpdated = DateTime.Now;
+                status.NextUpdateAt = nextUpdateIn == null
+                    ? null
+                    : DateTime.Now.Add(nextUpdateIn.Value);
             }
         }
 
         public void RequestLoadMoreFeed()
         {
+            string? indexToShow;
+            bool isLoading;
+
             lock (FeedLock)
             {
-                if (!string.IsNullOrWhiteSpace(NextIndexId) && !IsLoadingMoreFeed)
+                indexToShow = PrevIndexId;
+                isLoading = IsLoadingMoreFeed;
+
+                if (!string.IsNullOrWhiteSpace(PrevIndexId) && !IsLoadingMoreFeed)
                 {
                     LoadMoreRequested = true;
-                    UpdateThreadStatus("FeedSyncWorker", "Requested", $"Load more requested with index {NextIndexId}");
+
+                    UpdateThreadStatus("FeedSyncWorker", "Requested", $"Load more requested with index {PrevIndexId}");
+
+                    return;
                 }
+            }
+
+            if (string.IsNullOrWhiteSpace(indexToShow))
+            {
+                UpdateThreadStatus("FeedSyncWorker", "No More", "Bottom reached, but there is no next index.");
+            }
+            else if (isLoading)
+            {
+                UpdateThreadStatus("FeedSyncWorker", "Loading", "Bottom reached, but older posts are already loading.");
             }
         }
 
