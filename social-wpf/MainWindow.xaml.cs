@@ -71,7 +71,8 @@ namespace social_wpf
         private void ShowLoggedInStatus()
         {
             UserStatusTextBlock.Text = string.IsNullOrWhiteSpace(settings.LastUsername)
-                ? "Logged in" : $"Logged in as {settings.LastUsername}";
+                ? "Logged in" 
+                : $"Logged in as {settings.LastUsername}";
 
         }
         private void ShowLoggedOutStatus()
@@ -84,6 +85,30 @@ namespace social_wpf
             workerManager.Stop();
             storage.SaveSettings(settings);
             base.OnClosed(e);
+        }
+
+        private void LogoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            Logout();
+        }
+
+        public void Logout()
+        {
+            workerManager.Stop();
+
+            settings.IsLoggedIn = false;
+            settings.UserToken = string.Empty;
+            settings.UserId = string.Empty;
+            settings.AccessToken = string.Empty;
+
+            storage.SaveSettings(settings);
+
+            apiClient.ClearTokens();
+
+            ShowLoggedOutStatus();
+            StatusTextBlock.Text = "Logged out.";
+
+            MainFrame.Navigate(new Pages.LoginPage(apiClient, storage, settings, this));
         }
     }
 }

@@ -28,10 +28,22 @@
                            FontSize="20"
                            FontWeight="Bold"/>
 
-                <TextBlock x:Name="UserStatusTextBlock"
-                           Grid.Column="1"
-                           VerticalAlignment="Center"
-                           Text="Not logged in"/>
+                <StackPanel Grid.Column="1"
+            Orientation="Horizontal"
+            VerticalAlignment="Center">
+
+                    <TextBlock x:Name="UserStatusTextBlock"
+                                VerticalAlignment="Center"
+                                Foreground="Gray"
+                                Text="Not logged in"/>
+
+                    <Button x:Name="LogoutButton"
+                            Content="Logout"
+                            Width="80"
+                            Height="28"
+                            Margin="12,0,0,0"
+                            Click="LogoutButton_Click"/>
+                </StackPanel>
             </Grid>
         </Border>
 
